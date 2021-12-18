@@ -18,21 +18,6 @@ rootnode_tec <- xmlRoot(tec)
 
 #Pfade in xml Dateien
 
-#Funktionen
-#F?r orginal und eigenen Corpus
-#Erzuegen einer Autorenliste
-autorenListe <- function() xpathApply(corpus, "//message"){
-  aliste <- list()
-  for (m in xpathApply(corpus, "//message")){
-    autor <- xpathApply(corpus, "//message/author")
-    autorID <- xpathApply(corpus, "//message/author[0]")
-    if(elementListe(aliste,autorID) == FALSE){
-      aliste <- aliste + autorID
-    }
-  }
-  return(aliste)
-}
-
 #schaut ob ein Element in einer liste ist
 elementListe <- function(liste,Wert){
   g=FALSE
@@ -43,6 +28,22 @@ elementListe <- function(liste,Wert){
   }
   return(g)
 }
+
+#Funktionen
+#F?r orginal und eigenen Corpus
+#Erzuegen einer Autorenliste
+autorenListe <- function() xpathApply(corpus, "//message"){
+  aliste <- list()
+  for (m in xpathApply(corpus, "//message")){
+    autor <- xpathApply(m, "./author")
+    autorID <- xpathApply(m, "./author[1]")
+    if(elementListe(aliste,autorID) == FALSE){
+      aliste <- aliste + autorID
+    }
+  }
+  return(aliste)
+}
+
 wenigerals5Nachrichten<-function(autorenListe, //message){
   #Z?hlliste
   mc<- rep(NA,lenght(autorenListe))
