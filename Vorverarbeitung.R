@@ -97,7 +97,7 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "!"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "§"){
+          else if(symbole[[1]][s] == "Â§"){
             symbolcount <- symbolcount+1
           }
           else if(symbole[[1]][s] == "$"){
@@ -127,7 +127,7 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "`"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "´"){
+          else if(symbole[[1]][s] == "Â´"){
             symbolcount <- symbolcount+1
           }
           else if(symbole[[1]][s] == "*"){
@@ -163,7 +163,7 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "^"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "°"){
+          else if(symbole[[1]][s] == "Â°"){
             symbolcount <- symbolcount+1
           }
           anteilSym <- (symbolcount/(tokencount+epsilon))
@@ -196,7 +196,7 @@ toLowerCase<- function(doc){
       textelemente <- xpathApply(doc, paste0("//conversation[position()='",con,"']/message[position()='",m,"']/text[1]"),xmlValue)
       nodes <- getNodeSet(doc, paste0("//conversation[position()='",con,"']/message[position()='",m,"']/text[1]"))
       sapply(nodes, function(G){
-        xmlValue(G) <- gsub("[^A-Za-z0-9~!@#$%^&�|???*(){}_+:\"<>?,./;'[]-=`�]"," ", tolower(textelemente))
+        xmlValue(G) <- gsub("[^A-Za-z0-9~!@#$%^&§|???*(){}_+:\"<>?,./;'[]-=`´]"," ", tolower(textelemente))
       })
     }
   }
@@ -366,14 +366,14 @@ mehrals2<-function(doc,liste){
 
 #trainingscorpus orginal
 tc_o <- for (c in 1:length(xpathApply(tc, "//conversation",xmlValue))){
-  if (mehrals5(autorenListe(c,tc),tc)== T){
-    xml_remove(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+   if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
+    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
   }
-  else if(zuwenigAutoren(autorenListe(c,tc))==T){
-    xml_remove(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+  else if(xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
+    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
   }
   else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
-    xml_remove(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
   }
   print(c)
 }
