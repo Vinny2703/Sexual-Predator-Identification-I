@@ -25,17 +25,7 @@ rootnode_tec <- xmlRoot(tec)
 #Erzuegen einer Autorenliste
 autorenListe <- function(wert,doc){ 
 aliste <- list()
-i <- wert
-m<- 1
-while(m < length(xpathApply(doc, paste0("//conversation[position()='",i,"']/message"), xmlAttrs))+1){
-  autorID <- toString(xpathApply(doc, paste0("//conversation[position()='",i,"']/message[position()='",m,"']/author"), xmlValue))
-  if((autorID %in% aliste) == FALSE){
-    length(aliste) <- length(aliste)+1
-    aliste[length(aliste)]<-autorID
-  }
-  print(m)
-  m <- m+1
-}
+aliste <- xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[not(author = following-sibling::message/author)]/author"), xmlValue)
 return(aliste)
 }
 
@@ -48,16 +38,16 @@ wenigerals5Nachrichten<-function(wert,liste,doc){
     for (i in 1:length(liste)){
       if(autorennr %in% liste){
         mc[i]<- mc[i]+1
+        for (element in 1:length(mc)){
+          if (mc[element]>=5){
+            return(FALSE)
+          }
+        }
       }
       print(mes)
     }
   }
-  for (element in 1:length(mc)){
-    if (mc[element]<5){
-      return(TRUE)
-    }
-  }
-  return(FALSE)
+  return(TRUE)
 }
 
 #Symbolbilder entfernen
