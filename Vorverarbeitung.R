@@ -344,19 +344,17 @@ mehrals2<-function(doc,liste){
 
 
 #trainingscorpus orginal
-for (c in 1:length(xpathApply(tc, "//conversation",xmlValue))){
+c <- 1
+while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
    if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-     c <- c-1
   }
   else if(xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-     c <- c-1
   }
   else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-     c <- c-1
-  }
+  }else{c <- c+1}
   print(c)
 }
 tc <- Symbolbilder(tc)
