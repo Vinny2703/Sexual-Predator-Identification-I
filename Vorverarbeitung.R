@@ -30,24 +30,13 @@ return(aliste)
 }
 
 wenigerals5Nachrichten<-function(wert,liste,doc){
-  #Z?hlliste
-  mc<- rep(0,length(liste))
-  messa <- strtoi(xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[last()]"),xmlAttrs))
-  for (mes in 1:messa) {
-    autorennr <- xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[position()='",mes,"']/author[1]"),xmlValue)
-    for (i in 1:length(liste)){
-      if(autorennr %in% liste){
-        mc[i]<- mc[i]+1
-        for (element in 1:length(mc)){
-          if (mc[element]>=5){
-            return(FALSE)
-          }
-        }
-      }
-      print(mes)
+  for(i in 1:length(liste)){
+    if(xmlSize(xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[author='",liste[i],"']"))) < 5){
+      return(TRUE)
+    }else{
+      return(FALSE)
     }
-  }
-  return(TRUE)
+   }
 }
 
 #Symbolbilder entfernen
@@ -355,24 +344,27 @@ mehrals2<-function(doc,liste){
 
 
 #trainingscorpus orginal
-tc_o <- for (c in 1:length(xpathApply(tc, "//conversation",xmlValue))){
+for (c in 1:length(xpathApply(tc, "//conversation",xmlValue))){
    if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+     c <- c-1
   }
   else if(xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+     c <- c-1
   }
   else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+     c <- c-1
   }
   print(c)
 }
-tc_o <- Symbolbilder(tc_o)
-tc_o <- toLowerCase(tc_o)
-tc_o <- Abkuerzungen(tc_o)
-rootnode_tc_o <- xmlRoot(tc_o)
-rootsize_tc_o <- xmlSize(rootnode_tc_o)
-print(rootsize_tc_o)
+tc <- Symbolbilder(tc)
+tc <- toLowerCase(tc)
+tc <- Abkuerzungen(tc)
+rootnode_tc <- xmlRoot(tc)
+rootsize_tc <- xmlSize(rootnode_tc)
+print(rootsize_tc)
 
 
 
