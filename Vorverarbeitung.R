@@ -147,7 +147,7 @@ Symbolbilder<-function(doc){
           }
           anteilSym <- (symbolcount/(tokencount+epsilon))
           if(anteilSym > 0.45){
-            xml_remove(xpathApply(tc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
+            removeNodes(xpathApply(tc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
           }
         }
       }
