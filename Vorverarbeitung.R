@@ -8,6 +8,7 @@ library("readr")
 library("data.tree")
 library("base")
 library("xml2")
+library("tokenizers")
 
 #Corpuse einlesen
 #Trainingscorpus
@@ -52,7 +53,7 @@ Symbolbilder<-function(doc){
       text <- toString(xpathApply(doc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]"),xmlValue))
       linesnum <- unlist(strsplit(text, split = '\n'))
       if(length(linesnum) > 5) {
-        symbole <- tokenize_characters(text)
+        symbole <- tokenize_ptb(text)
         for (s in 1:length(symbole[[1]])) {
           tokencount <- tokencount+1
           if(symbole[[1]][s]== "."){
