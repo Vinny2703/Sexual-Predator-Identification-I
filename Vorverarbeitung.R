@@ -358,12 +358,29 @@ while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
   }else{c <- c+1}
   print(c)
 }
+  
+#trainingscorpus unser            
+#c <- 1
+#while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
+#  if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
+#    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+#  }
+#  else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
+#    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+#  }else{c <- c+1}
+#  print(c)
+#}
+         
+#zwischenspeicher, anbringen wo angst            
+cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tc.xml")
+            
 tc <- Symbolbilder(tc)
 tc <- toLowerCase(tc)
 tc <- Abkuerzungen(tc)
 rootnode_tc <- xmlRoot(tc)
 rootsize_tc <- xmlSize(rootnode_tc)
 print(rootsize_tc)
+
 
 
 
