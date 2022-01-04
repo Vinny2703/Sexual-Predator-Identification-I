@@ -24,13 +24,13 @@ print(rootsize_tc1)
 sexualpredetor <- read.table("C:/Users/marle/Documents/softwareprojekt1/pan12-sexual-predator-identification-groundtruth-problem1.txt")
 print(sexualpredetor)
 
-#Autorenliste für alle Konversationen (Funktion)
+#Autorenliste fÃ¼r alle Konversationen (Funktion)
 autorenListe_C <- function(doc){ 
   aliste_c <- list()
-  aliste_c <- xpathApply(doc, "//conversation/message[not(author = following-sibling::message/author)]/author", xmlValue)
+  aliste_c <- xpathApply(doc, "//conversations/conversation/message[not(author = following-sibling::message/author)]/author", xmlValue)
   return(aliste_c)
 }
-#Sexualstraftäterzahl in Corpus feststellen
+#SexualstraftÃ¤terzahl in Corpus feststellen
 sexualpredetorAnzahl<-function(autoren,sexualpredetor){
   s<-0
   for(i in 1:length(sexualpredetor[[1]])){
@@ -55,7 +55,7 @@ an_tc<-length(a_tc)
 an_tc
 #eigener
 an_tc1<-length(a_tc1)
-#Anzahl von Sexualstraftätern
+#Anzahl von SexualstraftÃ¤tern
 #orginal
 s_tc<-sexualpredetorAnzahl(a_tc,sexualpredetor)
 s_tc
