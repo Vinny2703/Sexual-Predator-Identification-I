@@ -12,14 +12,10 @@ library("tokenizers")
 
 #Corpuse einlesen
 #Trainingscorpus
-tc <- xmlParse(file = "C:/Users/Benutzer1/OneDrive/Softwareprojekt WiSe2021/pan12-sexual-predator-identification-training-corpus-2012-05-01/pan12-sexual-predator-identification-training-corpus-2012-05-01.xml")
+tc <- xmlParse(file = "pan12-sexual-predator-identification-training-corpus-2012-05-01.xml")
 rootnode_tc <- xmlRoot(tc)
 rootsize_tc <- xmlSize(rootnode_tc)
 print(rootsize_tc)
-#Testcorpus
-tec <- xmlParse(file = "C:/Users/Benutzer1/OneDrive/Softwareprojekt WiSe2021/pan12-sexual-predator-identification-test-corpus-2012-05-21/pan12-sexual-predator-identification-test-corpus-2012-05-17.xml")
-rootnode_tec <- xmlRoot(tec)
-
 
 #Funktionen
 #F?r orginal und eigenen Corpus
@@ -77,7 +73,7 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "!"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "§"){
+          else if(symbole[[1]][s] == "Â§"){
             symbolcount <- symbolcount+1
           }
           else if(symbole[[1]][s] == "$"){
@@ -107,7 +103,7 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "`"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "´"){
+          else if(symbole[[1]][s] == "Â´"){
             symbolcount <- symbolcount+1
           }
           else if(symbole[[1]][s] == "*"){
@@ -143,12 +139,12 @@ Symbolbilder<-function(doc){
           else if(symbole[[1]][s] == "^"){
             symbolcount <- symbolcount+1
           }
-          else if(symbole[[1]][s] == "°"){
+          else if(symbole[[1]][s] == "Â°"){
             symbolcount <- symbolcount+1
           }
           anteilSym <- (symbolcount/(tokencount+epsilon))
           if(anteilSym > 0.45){
-            removeNodes(xpathApply(tc, paste0("/conversations/conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
+            removeNodes(xpathApply(doc, paste0("/conversations/conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
           }
         }
       }
@@ -176,7 +172,7 @@ toLowerCase<- function(doc){
       textelemente <- xpathApply(doc, paste0("/conversations/conversation[position()='",con,"']/message[position()='",m,"']/text[1]"),xmlValue)
       nodes <- getNodeSet(doc, paste0("/conversations/conversation[position()='",con,"']/message[position()='",m,"']/text[1]"))
       sapply(nodes, function(G){
-        xmlValue(G) <- gsub("[^A-Za-z0-9~!@#$%^&�|???*(){}_+:\"<>?,./;'[]-=`�]"," ", tolower(textelemente))
+        xmlValue(G) <- gsub("[^A-Za-z0-9~!@#$%^&§|???*(){}_+:\"<>?,./;'[]-=`´]"," ", tolower(textelemente))
       })
     }
   }
@@ -309,40 +305,14 @@ Abkuerzungen<-function(doc){
 
 #Emoticon W?rterbuch
 emotdic <- function(){
-  dic <- file("C:/Users/marle/Documents/softwareprojekt1/EmoticonIDfinal.txt", open = "r")
   line <- read_lines("EmoticonIDfinal.txt", skip = 0, n_max = -1L)
   line
   lines <- unlist(strsplit(line, split = '\t'))
   emot_val <- lines[seq(1,length(lines), 2)]
   emot_id <- lines[seq(2, length(lines), 2)]
-  close(dic)
   emot_dict <- data.frame(emot_val, emot_id)
   return(emot_dict)
 }
-#F?r orginal Corpus
-
-#schauen ob Conversation 5 oder mehr Autoren hat
-mehrals5<-function(liste,doc){
-  if(length(liste)> 5){
-    return(TRUE)
-  }
-  else{
-    return(FALSE)
-  }
-}
-
-
-#F?r eigenen corpus
-#schauen ob Conversation 2 oder mehr Autoren hat
-mehrals2<-function(doc,liste){
-  if(length(liste)> 2){
-    return(TRUE)
-  }
-  else{
-    return(FALSE)
-  }
-}
-
 
 #testcorpus orginal
 c <- 1
@@ -359,24 +329,10 @@ while (c <= length(xpathApply(tec, "/conversations/conversation",xmlValue))){
   print(c)
 }
 
-#testcorpus unser            
-#c <- 1
-#while (c <= length(xpathApply(tec, "/conversations/conversation",xmlValue))){
-#  if (xmlSize(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
-#    removeNodes(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
-#  }
-#  else if(wenigerals5Nachrichten(c,autorenListe(c,tec), tec)){
-#    removeNodes(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
-#  }else{c <- c+1}
-#  print(c)
-#}
-
-#zwischenspeicher, anbringen wo angst            
-cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tec.xml")
-
 tc <- Symbolbilder(tc)
 tc <- toLowerCase(tc)
 tc <- Abkuerzungen(tc)
+cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tec.xml")
 rootnode_tc <- xmlRoot(tc)
 rootsize_tc <- xmlSize(rootnode_tc)
 print(rootsize_tc)
