@@ -22,13 +22,13 @@ print(rootsize_tc1)
 #Erzuegen einer Autorenliste
 autorenListe <- function(wert,doc){ 
 aliste <- list()
-aliste <- xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[not(author = following-sibling::message/author)]/author"), xmlValue)
+aliste <- xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[not(author = following-sibling::message/author)]/author"), xmlValue)
 return(aliste)
 }
 
 wenigerals5Nachrichten<-function(wert,liste,doc){
   for(i in 1:length(liste)){
-    if(xmlSize(xpathApply(doc, paste0("//conversation[position()='",wert,"']/message[author='",liste[i],"']"))) < 5){
+    if(xmlSize(xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[author='",liste[i],"']"))) < 5){
       return(TRUE)
     }else{
       return(FALSE)
@@ -39,14 +39,14 @@ wenigerals5Nachrichten<-function(wert,liste,doc){
 #Symbolbilder entfernen
 epsilon <- 1e-6
 Symbolbilder<-function(doc){
-  conv <- length(xpathApply(doc, "//conversation",xmlAttrs))
+  conv <- length(xpathApply(doc, "/conversations/conversation",xmlAttrs))
   for(conve in 1:conv) {
-    messages<- strtoi(xpathApply(doc, paste0("//conversation[position()='",conve,"']/message[last()]"),xmlAttrs))
+    messages<- strtoi(xpathApply(doc, paste0("/conversations/conversation[position()='",conve,"']/message[last()]"),xmlAttrs))
     for(m in 1:messages){
       print(m)
       tokencount <- 0
       symbolcount <- 0
-      text <- toString(xpathApply(doc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]"),xmlValue))
+      text <- toString(xpathApply(doc, paste0("/conversations/conversation[position()='",conve,"']/message[position()='",m,"']/text[1]"),xmlValue))
       linesnum <- unlist(strsplit(text, split = '\n'))
       if(length(linesnum) > 5) {
         symbole <- tokenize_ptb(text)
@@ -144,7 +144,7 @@ Symbolbilder<-function(doc){
           }
           anteilSym <- (symbolcount/(tokencount+epsilon))
           if(anteilSym > 0.45){
-            removeNodes(xpathApply(doc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
+            removeNodes(xpathApply(doc, paste0("/conversations/conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
           }
         }
       }
@@ -154,12 +154,12 @@ Symbolbilder<-function(doc){
 }
 
 toLowerCase<- function(doc){
-  conv <- length(xpathApply(doc, "//conversation",xmlAttrs))
+  conv <- length(xpathApply(doc, "/conversations/conversation",xmlAttrs))
   for (con in 1:conv){
-    mess <- strtoi(xpathApply(doc, paste0("//conversation[position()='",con,"']/message[last()]"),xmlAttrs))
+    mess <- strtoi(xpathApply(doc, paste0("/conversations/conversation[position()='",con,"']/message[last()]"),xmlAttrs))
     for (m in 1:mess){
-      textelemente <- xpathApply(doc, paste0("//conversation[position()='",con,"']/message[position()='",m,"']/text[1]"),xmlValue)
-      nodes <- getNodeSet(doc, paste0("//conversation[position()='",con,"']/message[position()='",m,"']/text[1]"))
+      textelemente <- xpathApply(doc, paste0("/conversations/conversation[position()='",con,"']/message[position()='",m,"']/text[1]"),xmlValue)
+      nodes <- getNodeSet(doc, paste0("/conversations/conversation[position()='",con,"']/message[position()='",m,"']/text[1]"))
       sapply(nodes, function(G){
         xmlValue(G) <- gsub("[^A-Za-z0-9~!@#$%^&§|???*(){}_+:\"<>?,./;'[]-=`´]"," ", tolower(textelemente))
       })
@@ -169,12 +169,12 @@ toLowerCase<- function(doc){
 }
 
 Abkuerzungen<-function(doc){
-  conv <- length(xpathApply(doc, "//conversation",xmlValue))
+  conv <- length(xpathApply(doc, "/conversations/conversation",xmlValue))
   for (c in 1:conv) {
-    mess<- strtoi(xpathApply(doc, paste0("//conversation[position()='",c,"']/message[last()]"),xmlAttrs))
+    mess<- strtoi(xpathApply(doc, paste0("/conversations/conversation[position()='",c,"']/message[last()]"),xmlAttrs))
     for (m in 1:mess) {
-      text <- xpathApply(doc, paste0("//conversation[position()='",c,"']/message[position()='",m,"']/text[1]"),xmlValue)
-      nodes <- getNodeSet(doc, paste0("//conversation[position()='",c,"']/message[position()='",m,"']/text[1]"))
+      text <- xpathApply(doc, paste0("/conversations/conversation[position()='",c,"']/message[position()='",m,"']/text[1]"),xmlValue)
+      nodes <- getNodeSet(doc, paste0("/conversations/conversation[position()='",c,"']/message[position()='",m,"']/text[1]"))
                           sapply(nodes, function(G){
                             xmlValue(G) <- gsub("m or f","male or female",text)
                             xmlValue(G) <- gsub(" lmfao ","laughing my ass off",text)
@@ -305,21 +305,21 @@ emotdic <- function(){
 
 #trainingscorpus eigen            
 c <- 1
-while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
-  if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
-    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+while (c <= length(xpathApply(tc1, "/conversations/conversation",xmlValue))){
+  if (xmlSize(xpathApply(tc1, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
+    removeNodes(xpathApply(tc1, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
   }
-  else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
-    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
+  else if(wenigerals5Nachrichten(c,autorenListe(c,tc1), tc1)){
+    removeNodes(xpathApply(tc1, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
   }else{c <- c+1}
   print(c)
 }
          
             
-tc <- Symbolbilder(tc)
-tc <- toLowerCase(tc)
-tc <- Abkuerzungen(tc)
-cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tc.xml")
-rootnode_tc <- xmlRoot(tc)
-rootsize_tc <- xmlSize(rootnode_tc)
-print(rootsize_tc)
+tc1 <- Symbolbilder(tc1)
+tc1 <- toLowerCase(tc1)
+tc1 <- Abkuerzungen(tc1)
+cat(saveXML(tc1,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tc1.xml")
+rootnode_tc1 <- xmlRoot(tc1)
+rootsize_tc1 <- xmlSize(rootnode_tc1)
+print(rootsize_tc1)
