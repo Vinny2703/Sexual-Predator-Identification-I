@@ -153,17 +153,6 @@ Symbolbilder<-function(doc){
   return(doc)
 }
 
-
-#schauen ob zuwenig Autoen
-zuwenigAutoren<-function(liste){
-  if(length(liste)> 1){
-    return(FALSE)
-  }
-  else{
-    return(TRUE)
-  }
-}
-
 toLowerCase<- function(doc){
   conv <- length(xpathApply(doc, "/conversations/conversation",xmlAttrs))
   for (con in 1:conv){
