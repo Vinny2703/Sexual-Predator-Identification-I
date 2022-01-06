@@ -9,27 +9,27 @@ library("base")
 
 #Dateneinlesen
 #Bereinigter orginal Trainingscorpus
-tc_o<-xmlParse(file="tc_o.xml")
+tc_o<-xmlParse(file="tc.xml")
 rootnode_tc_o <-xmlRoot(tc_o)
 rootsize(rootnode_tc_o)
 #Bereinigter eigener Trainingscorpus
-tc_e<-xmlParse(file="tc_e.xml")
+tc_e<-xmlParse(file="tc1.xml")
 rootnode_tc_e <-xmlRoot(tc_e)
 rootsize(rootnode_tc_e)
 
 #Bereinigter orginal Testcorpus
-tec_o<-xmlParse(file="tec_o.xml")
-rootnode_tec_o <-xmlRoot(tec_o)
-rootsize(rootnode_tec_o)
+#tec_o<-xmlParse(file="tec_o.xml")
+#rootnode_tec_o <-xmlRoot(tec_o)
+#rootsize(rootnode_tec_o)
 #Bereinigter eigener Testcorpus
-tec_e<-xmlParse(file="tc_e.xml")
-rootnode_tc_e <-xmlRoot(tc_e)
-rootsize(rootnode_tc_e)
+#tec_e<-xmlParse(file="tc_e.xml")
+#rootnode_tc_e <-xmlRoot(tc_e)
+#rootsize(rootnode_tc_e)
 
 #Labeldateien einlesen
-sexualpredetor_tc <- read.table("C:/Users/Mama/Desktop/softwareProjekt/pan12-sexual-predator-identification-training-corpus-predators-2012-05-01.txt")
+sexualpredetor_tc <- read.table("pan12-sexual-predator-identification-training-corpus-predators-2012-05-01.txt")
 print(sexualpredetor_tc)
-sexualpredetor_tec<- read.table("")
+#sexualpredetor_tec<- read.table("")
 
 
 #Feature-Funktionen 
@@ -38,30 +38,33 @@ startetconversation <- function(doc,wert){
 return(autorID)
 }
 
+#Funktion zum erstellen einer Autorenliste
+autorenListe <- function(wert,doc){ 
+  aliste <- list()
+  aliste <- xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[not(author = following-sibling::message/author)]/author"), xmlValue)
+  return(aliste)
+}
 
 spamfilter <- function(wert, doc) {
-  nr <- wert
-  while (nr < length(xpathApply(doc, "//conversation", xmlAttrs))+1) {
+    aut1 <- toString(autorenListe(wert, doc)[1])
+    aut2 <- toString(autorenListe(wert, doc)[2])
+    messagelist <- list()
     b <- 1
     j <- 0
     n1 <- 0
     n2 <- 0
     q1 <- 0
     q2 <- 0
-    messagelist <- list()
-    auth <- 1
-    aut_ID <- toString(xpathApply(doc, paste0("//conversation[position()='",nr,"']/message[1]/author[1]"), xmlValue))
-    autor1 <- aut_ID
-    while (auth < length(xpathApply(doc, paste0("//conversation[position()='",nr,"']/message/author"), xmlAttrs))+1) {
-      aut_ID2 <- toString(xpathApply(doc, paste0("//conversation[position()='",nr,"']/message[position()='",b,"']/author[1]"), xmlValue))
-      if(aut_ID2%in%aut_ID){
-        j <- j+1
-        aut_ID <- toString(xpathApply(doc, paste0("//conversation[position()='",nr,"']/message[position()='",b,"']/author[1]"), xmlValue))
+    r_autor1 <- 0
+    r_autor2 <- 0
+      while(b <= xmlSize(xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message")))){
+        aut_ID <- toString(xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[position()='",b,"']/author"), xmlValue))
         length(messagelist) <- length(messagelist)+1
-        messagelist[length(messagelist)]<-toString(xpathApply(doc, paste0("//conversation[position()='",nr,"']/message[position()='",b,"']/text[1]"), xmlValue))
-        b <- b+1
-        q <- 0
-        if(j >= 3){
+        messagelist[length(messagelist)]<-toString(xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[position()='",b,"']/text[1]"), xmlValue))
+        if(aut_ID == toString(xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[position()='",b+1,"']/author"), xmlValue))){
+        j <- j+1
+        }else if(j >= 3){
+          q <- 0
           if("?"%in%messagelist){
             q <- q+1
           }
@@ -86,27 +89,29 @@ spamfilter <- function(wert, doc) {
           else if(" who "%in%messagelist){
             q <- q+1
           }
-          if(autor1 == aut_ID){
+          if(aut1 == aut_ID){
             n1 <- n1+1
             q1 <- q1+q
           } else {
-            autor2 <- autID
             n2 <- n2+1
             q2 <- q2+q
           }
+          j <- 0
+          messagelist <- list()
+        }else{
+          j <- 0
+          messagelist <- list()
         }
-      } else {
-        j <- 0
-        messagelist <- list()
+          
+        b <- b+1
       }
-      auth <- auth+1
-    }
+    if(n1==0){n1 <- 1}
+    if(n2==0){n2 <- 1}
     r_autor1 <- q1/n1
     r_autor2 <- q2/n2
-    print(nr)
-    nr <- nr+1
-  }
-  autor <- c(autor1, autor2)
+    print(wert)
+  
+  autor <- c(aut1, aut2)
   ergebnis <- c(r_autor1,r_autor2)
   df <- data.frame(autor, ergebnis)
   return(df)
@@ -114,50 +119,31 @@ spamfilter <- function(wert, doc) {
 
 
 #Liste mit Conversationen
-#Funktion für erstellen der Listen
+#Funktion fÃ¼r erstellen der Listen
 conversationliste<-function(doc){
-  con_l<-c()
-  for(c in 1:length(xpathApply(doc, "//conversation", xmlAttrs))){
-    conID <- toString(xpathApply(doc, paste0("//conversation[position()='",c,"']"), xmlAttrs))
-    if((conID %in% con_l) == FALSE){
-      length(con_l) <- length(con_l)+1
-      con_l[length(con_l)]<-conID
-    }
-  }
+  con_l <- list()
+  con_l <- xpathApply(doc,"/conversations/conversation", xmlAttrs)
   return(con_l)
 }
-#Funktion zum erstellen einer Autorenliste
-autorenListe <- function(wert,doc){ 
-  aliste <- list()
-  i <- wert
-  m<- 1
-  while(m < length(xpathApply(doc, paste0("//conversation[position()='",i,"']/message"), xmlAttrs))+1){
-    autorID <- toString(xpathApply(doc, paste0("//conversation[position()='",i,"']/message[position()='",m,"']/author"), xmlValue))
-    if((autorID %in% aliste) == FALSE){
-      length(aliste) <- length(aliste)+1
-      aliste[length(aliste)]<-autorID
-    }
-  }
-  return(aliste)
-}
+
 #Listen der Conversationen in Corpa
 conl_tc_o<-conversationliste(tc_o)
 conl_tc_e<-conversationliste(tc_e)
-conl_tec_o<-conversationliste(tec_o)
-conl_tec_e<-conversationliste(tec_e)
+#conl_tec_o<-conversationliste(tec_o)
+#conl_tec_e<-conversationliste(tec_e)
 
 #Featurextrator
 
 featureExtrator<- funktion(doc,conversationl,label,featureDictionary){
- #Vectoren für die Initialisierung des leeren Feature Dictionary 
+ #Vectoren fÃ¼r die Initialisierung des leeren Feature Dictionary 
   autorID<-vector()
   CID<-vector()
   starts<-numeric()#1-gestartet 0-nicht gestartet
   spam<-numeric()
   l<-numeric()#1-sexualpredetor 0-kein sexualpredetor
   featureDictionary <-data.frame(autorID,CID,starts,spam,l)
-for(i in 1:length(xpathApply(doc, "//conversation",xmlAttrs))){
-  conversationID<-toString(xpathApply(doc, paste0("//conversation[position()='",i,"']"), xmlAttrs))
+for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
+  conversationID<-toString(xpathApply(doc, paste0("/conversations/conversation[position()='",i,"']"), xmlAttrs))
   #AutorID von Autor, der Konversation gestartet hat
   starter<- startetconversation(doc,i)
   #!!!!Spamfilter (nicht fuer originalen Korpus)!!!! 
@@ -171,7 +157,11 @@ for(i in 1:length(xpathApply(doc, "//conversation",xmlAttrs))){
       autorID<-c(autorID)
       CID<- c(conversationID)
       starts<-c(1)
-      spam<-c(spam) #<--- Hier müssen die richten Spamwerte (r_autor1 oder r_autor2) den richtigen autoren zugeordnet werden 
+      if(autorID==spamf[1, 1]){
+        spam <- spamf[1, 2]
+      }else{
+        spam <- spamf[2, 2]
+      }      
       l<-c(1)
       x<-data.frame(autorID,CID,starts,spam,l)
       featureDictionary<-rbind(featureDictionary,x)
@@ -214,10 +204,10 @@ for(i in 1:length(xpathApply(doc, "//conversation",xmlAttrs))){
 #Trainingsdaten orginal
 featureT_tc_o <-featureExtrator(tc_o,conl_tc_o,sexualpredetor_tc,featureT_tc_o)
 #Testdaten orginal
-featureT_tec_o<-featureExtrator(tec_o,conl_tec_o,sexualpredetor_tec,featureT_tec_o)
+#featureT_tec_o<-featureExtrator(tec_o,conl_tec_o,sexualpredetor_tec,featureT_tec_o)
 
 #Trainingsdaten eigene
 featureT_tc_e <-featureExtrator(tc_e,conl_tc_e,sexualpredetor_tc,featureT_tc_e)
 #Testdaten eigene
-featureT_tec_e<-featureExtrator(tec_e,conl_tec_e,sexualpredetor_tec,featureT_tec_e)
+#featureT_tec_e<-featureExtrator(tec_e,conl_tec_e,sexualpredetor_tec,featureT_tec_e)
                 
