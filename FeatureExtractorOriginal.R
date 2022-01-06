@@ -12,25 +12,10 @@ library("base")
 tc_o<-xmlParse(file="tc.xml")
 rootnode_tc_o <-xmlRoot(tc_o)
 rootsize(rootnode_tc_o)
-#Bereinigter eigener Trainingscorpus
-tc_e<-xmlParse(file="tc1.xml")
-rootnode_tc_e <-xmlRoot(tc_e)
-rootsize(rootnode_tc_e)
-
-#Bereinigter orginal Testcorpus
-#tec_o<-xmlParse(file="tec_o.xml")
-#rootnode_tec_o <-xmlRoot(tec_o)
-#rootsize(rootnode_tec_o)
-#Bereinigter eigener Testcorpus
-#tec_e<-xmlParse(file="tc_e.xml")
-#rootnode_tc_e <-xmlRoot(tc_e)
-#rootsize(rootnode_tc_e)
 
 #Labeldateien einlesen
 sexualpredetor_tc <- read.table("pan12-sexual-predator-identification-training-corpus-predators-2012-05-01.txt")
 print(sexualpredetor_tc)
-#sexualpredetor_tec<- read.table("")
-
 
 #Feature-Funktionen 
 startetconversation <- function(doc,wert){
@@ -128,9 +113,6 @@ conversationliste<-function(doc){
 
 #Listen der Conversationen in Corpa
 conl_tc_o<-conversationliste(tc_o)
-conl_tc_e<-conversationliste(tc_e)
-#conl_tec_o<-conversationliste(tec_o)
-#conl_tec_e<-conversationliste(tec_e)
 
 #Featurextrator
 
@@ -203,11 +185,4 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
 #Featurextraktion
 #Trainingsdaten orginal
 featureT_tc_o <-featureExtrator(tc_o,conl_tc_o,sexualpredetor_tc,featureT_tc_o)
-#Testdaten orginal
-#featureT_tec_o<-featureExtrator(tec_o,conl_tec_o,sexualpredetor_tec,featureT_tec_o)
 
-#Trainingsdaten eigene
-featureT_tc_e <-featureExtrator(tc_e,conl_tc_e,sexualpredetor_tc,featureT_tc_e)
-#Testdaten eigene
-#featureT_tec_e<-featureExtrator(tec_e,conl_tec_e,sexualpredetor_tec,featureT_tec_e)
-                
