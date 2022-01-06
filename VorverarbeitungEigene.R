@@ -12,14 +12,10 @@ library("tokenizers")
 
 #Corpuse einlesen
 #Trainingscorpus
-tc <- xmlParse(file = "C:/Users/marle/Documents/softwareprojekt1/pan12-sexual-predator-identification-training-corpus-2012-05-01.xml")
-rootnode_tc <- xmlRoot(tc)
-rootsize_tc <- xmlSize(rootnode_tc)
-print(rootsize_tc)
-#Testcorpus
-tec <- xmlParse(file = "pan12-sexual-predator-identification-test-corpus-2012-05-21.xml")
-rootnode_tec <- xmlRoot(tec)
-
+tc1 <- xmlParse(file = "pan12-sexual-predator-identification-training-corpus-2012-05-01.xml")
+rootnode_tc1 <- xmlRoot(tc1)
+rootsize_tc1 <- xmlSize(rootnode_tc1)
+print(rootsize_tc1)
 
 #Funktionen
 #F?r orginal und eigenen Corpus
@@ -148,24 +144,13 @@ Symbolbilder<-function(doc){
           }
           anteilSym <- (symbolcount/(tokencount+epsilon))
           if(anteilSym > 0.45){
-            removeNodes(xpathApply(tc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
+            removeNodes(xpathApply(doc, paste0("//conversation[position()='",conve,"']/message[position()='",m,"']/text[1]")), free = TRUE)
           }
         }
       }
     }
   }
   return(doc)
-}
-
-
-#schauen ob zuwenig Autoen
-zuwenigAutoren<-function(liste){
-  if(length(liste)> 1){
-    return(FALSE)
-  }
-  else{
-    return(TRUE)
-  }
 }
 
 toLowerCase<- function(doc){
@@ -309,48 +294,19 @@ Abkuerzungen<-function(doc){
 
 #Emoticon W?rterbuch
 emotdic <- function(){
-  dic <- file("C:/Users/marle/Documents/softwareprojekt1/EmoticonIDfinal.txt", open = "r")
   line <- read_lines("EmoticonIDfinal.txt", skip = 0, n_max = -1L)
   line
   lines <- unlist(strsplit(line, split = '\t'))
   emot_val <- lines[seq(1,length(lines), 2)]
   emot_id <- lines[seq(2, length(lines), 2)]
-  close(dic)
   emot_dict <- data.frame(emot_val, emot_id)
   return(emot_dict)
 }
-#F?r orginal Corpus
 
-#schauen ob Conversation 5 oder mehr Autoren hat
-mehrals5<-function(liste,doc){
-  if(length(liste)> 5){
-    return(TRUE)
-  }
-  else{
-    return(FALSE)
-  }
-}
-
-
-#F?r eigenen corpus
-#schauen ob Conversation 2 oder mehr Autoren hat
-mehrals2<-function(doc,liste){
-  if(length(liste)> 2){
-    return(TRUE)
-  }
-  else{
-    return(FALSE)
-  }
-}
-
-
-#trainingscorpus orginal
+#trainingscorpus eigen            
 c <- 1
 while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
-   if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
-    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-  }
-  else if(xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
+  if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
     removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
   }
   else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
@@ -358,29 +314,12 @@ while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
   }else{c <- c+1}
   print(c)
 }
-  
-#trainingscorpus unser            
-#c <- 1
-#while (c <= length(xpathApply(tc, "//conversation",xmlValue))){
-#  if (xmlSize(xpathApply(tc, paste0("//conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) != 2 ){
-#    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-#  }
-#  else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
-#    removeNodes(xpathApply(tc, paste0("//conversation[position()='",c,"']")), free = TRUE)
-#  }else{c <- c+1}
-#  print(c)
-#}
          
-#zwischenspeicher, anbringen wo angst            
-cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tc.xml")
             
 tc <- Symbolbilder(tc)
 tc <- toLowerCase(tc)
 tc <- Abkuerzungen(tc)
+cat(saveXML(tc,indent = TRUE,prefix = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>\n"),file="tc.xml")
 rootnode_tc <- xmlRoot(tc)
 rootsize_tc <- xmlSize(rootnode_tc)
 print(rootsize_tc)
-
-
-
-
