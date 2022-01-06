@@ -303,17 +303,17 @@ emotdic <- function(){
   return(emot_dict)
 }
 
-#testcorpus orginal
+#trainingscorpus orginal
 c <- 1
-while (c <= length(xpathApply(tec, "/conversations/conversation",xmlValue))){
-  if (xmlSize(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
-    removeNodes(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
+while (c <= length(xpathApply(tc, "/conversations/conversation",xmlValue))){
+  if (xmlSize(xpathApply(tc, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) > 5 ){
+    removeNodes(xpathApply(tc, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
   }
-  else if(xmlSize(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
-    removeNodes(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
+  else if(xmlSize(xpathApply(tc, paste0("/conversations/conversation[position()='",c,"']/message[not(author = following-sibling::message/author)]"))) < 2 ){
+    removeNodes(xpathApply(tc, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
   }
-  else if(wenigerals5Nachrichten(c,autorenListe(c,tec), tec)){
-    removeNodes(xpathApply(tec, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
+  else if(wenigerals5Nachrichten(c,autorenListe(c,tc), tc)){
+    removeNodes(xpathApply(tc, paste0("/conversations/conversation[position()='",c,"']")), free = TRUE)
   }else{c <- c+1}
   print(c)
 }
