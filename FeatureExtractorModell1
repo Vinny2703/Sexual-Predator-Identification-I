@@ -49,7 +49,7 @@ featureExtrator<- funktion(doc,conversationl,label,featureDictionary){
   CID<-vector()
   starts<-numeric()#1-gestartet 0-nicht gestartet
   l<-numeric()#1-sexualpredetor 0-kein sexualpredetor
-  featureDictionary <-data.frame(autorID,CID,starts,spam,l)
+  featureDictionary <-data.frame(autorID,CID,starts,l)
 for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
   conversationID<-toString(xpathApply(doc, paste0("/conversations/conversation[position()='",i,"']"), xmlAttrs))
   #AutorID von Autor, der Konversation gestartet hat
