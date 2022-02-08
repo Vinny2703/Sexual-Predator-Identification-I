@@ -1,0 +1,104 @@
+library("dplyr")
+library("xml")
+library("tidyr")
+library("methods")
+library("stringr")
+library("readr")
+library("data.tree")
+library("base")
+
+#Dateneinlesen
+#Bereinigter orginal Trainingscorpus
+tc_o<-xmlParse(file="tc.xml")
+rootnode_tc_o <-xmlRoot(tc_o)
+rootsize(rootnode_tc_o)
+
+#Labeldateien einlesen
+sexualpredetor_tc <- read.table("pan12-sexual-predator-identification-training-corpus-predators-2012-05-01.txt")
+print(sexualpredetor_tc)
+
+#Feature-Funktionen 
+startetconversation <- function(doc,wert){
+  autorID<-toString(xpathApply(doc,paste0("//conversation[position()='",wert,"']/message[1]/author"),xmlValue))
+return(autorID)
+}
+
+#Funktion zum erstellen einer Autorenliste
+autorenListe <- function(wert,doc){ 
+  aliste <- list()
+  aliste <- xpathApply(doc, paste0("/conversations/conversation[position()='",wert,"']/message[not(author = following-sibling::message/author)]/author"), xmlValue)
+  return(aliste)
+}
+
+#Liste mit Conversationen
+#Funktion für erstellen der Listen
+conversationliste<-function(doc){
+  con_l <- list()
+  con_l <- xpathApply(doc,"/conversations/conversation", xmlAttrs)
+  return(con_l)
+}
+
+#Listen der Conversationen in Corpa
+conl_tc_o<-conversationliste(tc_o)
+
+#Featurextrator
+
+featureExtrator<- funktion(doc,conversationl,label,featureDictionary){
+ #Vectoren für die Initialisierung des leeren Feature Dictionary 
+  autorID<-vector()
+  CID<-vector()
+  starts<-numeric()#1-gestartet 0-nicht gestartet
+  l<-numeric()#1-sexualpredetor 0-kein sexualpredetor
+  featureDictionary <-data.frame(autorID,CID,starts,spam,l)
+for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
+  conversationID<-toString(xpathApply(doc, paste0("/conversations/conversation[position()='",i,"']"), xmlAttrs))
+  #AutorID von Autor, der Konversation gestartet hat
+  starter<- startetconversation(doc,i)
+ 
+  for (m in 1:length(autorenListe(i,doc))) {
+    aliste<-autorenListe(i,doc)
+    autorID <-aliste[m]
+  if(autorID%in%label){
+    if(starter==autorID){
+      autorID<-c(autorID)
+      CID<- c(conversationID)
+      starts<-c(1)
+      l<-c(1)
+      x<-data.frame(autorID,CID,starts,spam,l)
+      featureDictionary<-rbind(featureDictionary,x)
+    }
+    else{
+      autorID<-c(autorID)
+      CID<- c(conversationID)
+      starts<-c(0)
+      l<-c(1)
+      x<-data.frame(autorID,CID,starts,spam,l)
+      featureDictionary<-rbind(featureDictionary,x)
+  }
+  }else{
+    if(starter==autorID){
+      autorID<-c(autorID)
+      CID<- c(conversationID)
+      starts<-c(1)
+      l<-c(0)
+      x<-data.frame(autorID,CID,starts,spam,l)
+      featureDictionary<-rbind(featureDictionary,x)
+    }
+    else{
+      autorID<-c(autorID)
+      CID<- c(conversationID)
+      starts<-c(0)
+      l<-c(0)
+      x<-data.frame(autorID,CID,starts,spam,l)
+      featureDictionary<-rbind(featureDictionary,x)
+    }
+  }
+}
+} 
+  return(featureDictionary)
+  } 
+
+#Featurextraktion
+#Trainingsdaten orginal und Conversationstart Feature
+featureT_tc_o <-featureExtrator(tc_o,conl_tc_o,sexualpredetor_tc,featureT_tc_o)
+
