@@ -45,6 +45,6 @@ hist1<-fit_generator(
 save_model_hdf5(model2,"model2/")
 
 #testen
-#Model2 laden
+#Modell2 laden
 model2<-load_model_hdf5("model2/")
 
