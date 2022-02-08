@@ -1,4 +1,4 @@
-#Model1 orginal Corpus und Conversationsstart Feature
+#Model111 orginal Corpus und Conversationsstart Feature
 #Variablen
 epochs<-30
 batch_s<-8
@@ -13,8 +13,8 @@ conv1D_7 <- layer_conv_1d(40,7,padding = 'same', activation ='relu')(a_embedding
 x<- layer_concatenate(list(conv1D_1, conv1D_3,conv1D_5,conv1D_7))
 autor_embedding <-layer_embedding()
 
-model1 <- keras_model_sequential()
-model1%>% word_vector
+model111 <- keras_model_sequential()
+model111%>% word_vector
 embedding %>% 
   x %>%
   y<-layer_max_pooling_1d()%>%
@@ -39,12 +39,12 @@ hist1<-fit_generator(
   epochs = epochs,
   batch_size =batch_s,
   callbacks = list(
-    callback_model_checkpoint(file.path(path,"model1_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
-    callback_tensorboard(log_dir = file.path(path,"model1_logs"))
+    callback_model_checkpoint(file.path(path,"model111_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
+    callback_tensorboard(log_dir = file.path(path,"model111_logs"))
 ))
-save_model_hdf5(model1,"model/")
+save_model_hdf5(model111,"model111/")
 
 #testen
-#Model1 laden
-model1<-load_model_hdf5("model/")
+#Model111 laden
+model111<-load_model_hdf5("model111/")
 
