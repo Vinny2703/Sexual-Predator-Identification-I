@@ -1,4 +1,4 @@
-#Model112 eigener Corpus und Conversationsstart Feature
+#Modell2 eigener Corpus und Conversationsstart Feature
 #Variablen
 epochs<-30
 batch_s<-8
@@ -13,8 +13,8 @@ conv1D_7 <- layer_conv_1d(40,7,padding = 'same', activation ='relu')(a_embedding
 x<- layer_concatenate(list(conv1D_1, conv1D_3,conv1D_5,conv1D_7))
 autor_embedding <-layer_embedding()
 
-model112 <- keras_model_sequential()
-model112%>% word_vector
+model2 <- keras_model_sequential()
+model2%>% word_vector
 embedding %>% 
   x %>%
   y<-layer_max_pooling_1d()%>%
@@ -27,7 +27,7 @@ embedding %>%
 #Metric festlegen
 metric <- c(metric_precision(name = 'precision'), metric_recall(name = 'recall'))
 #compile
-model112%>% compile(
+model2%>% compile(
   loss = 'binary_crossentropy',
   optimizer=optimizer_adam(lr=lr),
   metrics=metric
@@ -39,12 +39,12 @@ hist1<-fit_generator(
   epochs = epochs,
   batch_size =batch_s,
   callbacks = list(
-    callback_model_checkpoint(file.path(path,"model112_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
-    callback_tensorboard(log_dir = file.path(path,"model112_logs"))
+    callback_model_checkpoint(file.path(path,"model2_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
+    callback_tensorboard(log_dir = file.path(path,"model2_logs"))
 ))
-save_model_hdf5(model112,"model112/")
+save_model_hdf5(model2,"model2/")
 
 #testen
-#Model112 laden
-model112<-load_model_hdf5("model112/")
+#Model2 laden
+model2<-load_model_hdf5("model2/")
 
