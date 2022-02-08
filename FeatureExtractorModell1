@@ -64,7 +64,7 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
       CID<- c(conversationID)
       starts<-c(1)
       l<-c(1)
-      x<-data.frame(autorID,CID,starts,spam,l)
+      x<-data.frame(autorID,CID,starts,l)
       featureDictionary<-rbind(featureDictionary,x)
     }
     else{
@@ -72,7 +72,7 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
       CID<- c(conversationID)
       starts<-c(0)
       l<-c(1)
-      x<-data.frame(autorID,CID,starts,spam,l)
+      x<-data.frame(autorID,CID,starts,l)
       featureDictionary<-rbind(featureDictionary,x)
   }
   }else{
@@ -81,7 +81,7 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
       CID<- c(conversationID)
       starts<-c(1)
       l<-c(0)
-      x<-data.frame(autorID,CID,starts,spam,l)
+      x<-data.frame(autorID,CID,starts,l)
       featureDictionary<-rbind(featureDictionary,x)
     }
     else{
@@ -89,7 +89,7 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
       CID<- c(conversationID)
       starts<-c(0)
       l<-c(0)
-      x<-data.frame(autorID,CID,starts,spam,l)
+      x<-data.frame(autorID,CID,starts,l)
       featureDictionary<-rbind(featureDictionary,x)
     }
   }
