@@ -149,5 +149,5 @@ for(i in 1:xmlSize(xpathApply(doc, "/conversations/conversation",xmlAttrs))){
   } 
 
 #Featurextraktion
-#Trainingsdaten eigene
+#Trainingsdaten eigene und Spam Feature
 featureT_tc_e <-featureExtrator(tc_e,conl_tc_e,sexualpredetor_tc,featureT_tc_e)
