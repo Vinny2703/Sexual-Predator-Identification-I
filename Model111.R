@@ -27,7 +27,7 @@ embedding %>%
 #Metric festlegen
 metric <- c(metric_precision(name = 'precision'), metric_recall(name = 'recall'))
 #compile
-model1%>% compile(
+model111%>% compile(
   loss = 'binary_crossentropy',
   optimizer=optimizer_adam(lr=lr),
   metrics=metric
