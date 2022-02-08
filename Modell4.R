@@ -1,4 +1,4 @@
-#Model114 eigener Corpus und Spam Feature und Conversationsstart Feature
+#Modell4 eigener Corpus und Spam Feature und Conversationsstart Feature
 #Variablen
 epochs<-30
 batch_s<-8
@@ -13,8 +13,8 @@ conv1D_7 <- layer_conv_1d(40,7,padding = 'same', activation ='relu')(a_embedding
 x<- layer_concatenate(list(conv1D_1, conv1D_3,conv1D_5,conv1D_7))
 autor_embedding <-layer_embedding()
 
-model114 <- keras_model_sequential()
-model114%>% word_vector
+model4 <- keras_model_sequential()
+model4%>% word_vector
 embedding %>% 
   x %>%
   y<-layer_max_pooling_1d()%>%
@@ -27,7 +27,7 @@ embedding %>%
 #Metric festlegen
 metric <- c(metric_precision(name = 'precision'), metric_recall(name = 'recall'))
 #compile
-model114%>% compile(
+model4%>% compile(
   loss = 'binary_crossentropy',
   optimizer=optimizer_adam(lr=lr),
   metrics=metric
@@ -39,12 +39,12 @@ hist1<-fit_generator(
   epochs = epochs,
   batch_size =batch_s,
   callbacks = list(
-    callback_model_checkpoint(file.path(path,"model114_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
-    callback_tensorboard(log_dir = file.path(path,"model114_logs"))
+    callback_model_checkpoint(file.path(path,"model4_checkpoint.hdf5"), period = 10, save_freq = 'epoch'),
+    callback_tensorboard(log_dir = file.path(path,"model4_logs"))
 ))
-save_model_hdf5(model114,"model114/")
+save_model_hdf5(model4,"model4/")
 
 #testen
-#Model114 laden
-model114<-load_model_hdf5("model114/")
+#Modell4 laden
+model4<-load_model_hdf5("model4/")
 
