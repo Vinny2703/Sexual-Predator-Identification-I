@@ -1,4 +1,4 @@
-#Model112 eigener Corpus und Spam Feature
+#Model113 eigener Corpus und Spam Feature
 #Variablen
 epochs<-30
 batch_s<-8
