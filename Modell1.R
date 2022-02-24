@@ -23,6 +23,11 @@ embedding %>%
   layer_dropout(0,5) %>%
   layer_dense(units=1, activation = 'sigmoid')
 
+set.seed(123)
+inp <- sample(2, nrow(tc_o), replace = TRUE, prob c(0.7, 0.3))
+training_tc_o <- tc_o[inp==1, ]
+test_tc_o <- tc_o[inp==2, ]
+
 #Training
 #Metric festlegen
 metric <- c(metric_precision(name = 'precision'), metric_recall(name = 'recall'))
