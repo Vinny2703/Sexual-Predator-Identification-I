@@ -1,38 +1,39 @@
-# Sexual-Predator-Identification-I
-Aufgabe
+############################################################################################
+Allgemein
 
-Das Ziel dieser Aufgabe ist es, Klassen von Autoren, nämlich Online-Sexualstraftäter, zu identifizieren. Sie erhalten Chat-Protokolle, an denen zwei (oder mehr) Personen beteiligt sind, und müssen herausfinden, wer derjenige ist, der versucht, die andere zu einer sexuellen Gefälligkeit zu bewegen. Zusätzlich soll das spezielle Gespräch identifiziert werden, in dem sich die Absicht der Person zeigt.
+Packages, die für die Ausführung des Programms benötigt werden, werden mit dem library 
+Befehl am Anfang des Programms geladen.
 
-Die Aufgabe kann daher in zwei Teile aufgeteilt werden:
+Codestellen, die mit orginal bezeichnet sind, beziehen sich auf den bereinigten Corpus, 
+der in dem  Paper, das als Grundlage der Arbeit dient, beschrieben wird.
 
-    Identifikation der Online-Sexualstraftäter (innerhalb aller Benutzer)
-    Identifikation des Teils (Zeilen) der Straftätergespräche, die das ausgeprägteste Verhalten in dieser Hinsicht repräsentieren.
+Codestellen, die mit eigen/eigener bezeichnet sind beziehen sich auf den bereinigten
+Corpus, der nach unseren Vorgaben bereinigt wurde.
 
-Angesichts des öffentlichen Charakters des Datensatzes bitten wir die Teilnehmerinnen und Teilnehmer, zur Lösung dieser Aufgabe keine externen oder Online-Ressourcen (z.B. Suchmaschinen) zu nutzen, sondern nur Beweise aus den bereitgestellten Datensätzen zu extrahieren.
-Eingabe
+txt_Dateien, auf die verwiesen wird, werden mit geschickt.
 
-Für die Entwicklung Ihrer Software stellen wir Ihnen ein Trainingskorpus zur Verfügung, das aus Chat-Protokollen besteht, in denen Minderjährige und Erwachsene, die vorgeben, Minderjährige zu sein, chatten.
-Ausgabe
+Die Abspeicherung der einzelnen xml-Dateien sind nicht zwingend erfordelich, wurden 
+aber Aufgrund der technischen Probleme als Absicherung eingebaut.
+ 
+Als Datengrundlage dient der Trainingscorpus der Competition PAN-2012.
+############################################################################################
+############################################################################################
+Reihenfolge für die Ausführung der Programme:
 
-Für jeden der beiden Teile benötigen wir ein anderes Format.
+1. Vorverarbeitung.R
+(an dieser Stelle kann AuswertungTrainingsCorpus.R ausgeführt werden)
+2. CNNInput
+	2.1 CNNInputEigene.R
+	2.2 CNNInputOrginal.R
+3. FeaturExtractor.R
+	3.1 FeaturExtractorModell1.R
+	3.2 FeaturExtractorModell2.R
+	3.3 FeaturExtractorModell3.R
+	3.4 FeaturExtractorModell4.R
+4. Modelle 1-4
+	Modell1 (orginal Korpus und Conversationstart Feature aus Paper)
+	Modell2 (eigener Korpus und Conversationstart Feature aus Paper)
+	Modell3 (eigener Korpus und Spam Feature)
+	Modell4 (eigener Korpus und Spam Feature und Conversationstart Feature aus Paper)
 
-Identifikation der Online-Sexualstraftäter (innerhalb aller Benutzer)
-
-Sie sollten eine Textdatei mit einer Benutzerkennung pro Zeile ausgeben, wobei nur die als Online-Sexualstraftäter identifizierten Benutzer enthalten sein sollten:
-
-...
-a7c5056a2c30e2dc637907f448934ca3
-58f15bbb100bbeb6963b4b967ce04bdf
-e040eb115e3f7ad3824e93141665fc2a
-3d57ed3fac066fa4f8a52432db51c019
-...
-
-Identifikation des Teils (Zeilen) der Straftätergespräche, die das ausgeprägteste Verhalten in dieser Hinsicht repräsentieren.
-
-Sie sollten eine xml-Datei ähnlich der Korpusdatei ausgeben, die Konversations-IDs und die Zeilennummern der als verdächtig erachtete Nachrichten enthält (Zeilennummern zusammen mit allen anderen Nachrichteninformationen: Autor, Zeit, Text):
-
-
-
-Evaluation
-
-Die Leistung Ihrer Straftäter-Identifikation wird nach durchschnittlicher Präzision, Sensitivität und F-Maß über alle beteiligten Personen und Gesprächszeilen beurteilt. Dabei ist F0.5 für die Straftäter-Identifikation und F3 für die Zeilenidentifikation zu verwenden.
+############################################################################################
